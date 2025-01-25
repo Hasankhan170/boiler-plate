@@ -70,7 +70,7 @@ const register = async(req,res)=>{
     })
 
     const info = await transporter.sendMail({
-      from: '"Maddison Foo Koch 👻" <vernie11@ethereal.email>', // sender address
+      from: '"Maddison Foo Koch 👻" <hasankhanali0316@gmail.com>', // sender address
       to: email, // recipient's email
       subject: "Your Account Password ✔", // Subject line
       text: `Your password is: ${randomPassword}`, // plain text body
@@ -117,16 +117,16 @@ const register = async(req,res)=>{
 
 const login = async (req, res) => {
     try {
-      const { email, password  } = req.body;
+      const { cnic, password  } = req.body;
   
       // Input validation
-      if (!email)
-        return res.status(400).json({ message: "Please enter an email" });
+      if (!cnic)
+        return res.status(400).json({ message: "Please enter an cnic" });
       if (!password)
         return res.status(400).json({ message: "Please enter a password " });
   
       // Find user
-      const user = await FbUser.findOne({ email });
+      const user = await FbUser.findOne({ cnic });
       if (!user) return res.status(404).json({ message: "User not found" });
   
       // Check password
@@ -150,17 +150,21 @@ const login = async (req, res) => {
       res.status(200).json({
         message: "User logged in successfully",
         accessToken,
-        user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-        },
+       user: {
+        id: user._id,
+        cnic: user.cnic,
+        email: user.email,
+        name: user.name,
+      },
       });
     } catch (error) {
       console.error("Login error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   };
+
+
+
 
 
 const logout = async (req,res)=>{
