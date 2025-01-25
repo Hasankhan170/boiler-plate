@@ -70,8 +70,8 @@ const register = async(req,res)=>{
     })
 
     const info = await transporter.sendMail({
-      from: '"Maddison Foo Koch 👻" <hasankhanali0316@gmail.com>', // sender address
-      to: email, // recipient's email
+      from: '"hasan khan" <hasankhanali0316@gmail.com>', // sender address
+      to: email, 
       subject: "Your Account Password ✔", // Subject line
       text: `Your password is: ${randomPassword}`, // plain text body
       html: `<b>Your password is: ${randomPassword}</b>`, // HTML body
