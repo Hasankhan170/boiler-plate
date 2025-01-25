@@ -14,7 +14,18 @@ dotenv.config()
 
 const app = express()
 
-app.use(cors())
+// {
+//   origin: "http://localhost:5173",
+//   credentials: true,
+//   exposedHeaders: ["set-cookie"],
+// }
+app.use(
+  cors({
+    origin: '*',
+    credentials: true,
+    exposedHeaders: ["set-cookie"],
+  })
+);
 app.use(express.json())
 app.use(cookieParser())
 

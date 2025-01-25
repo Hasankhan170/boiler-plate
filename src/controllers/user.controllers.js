@@ -17,24 +17,24 @@ const generateRefreshToken = (user)=>{
     })
 }
 
-const uploadImgToCloudinary = async (filePath) => {
+// const uploadImgToCloudinary = async (filePath) => {
 
-    cloudinary.config({
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        api_key: process.env.CLOUDINARY_API_KEY,
-        api_secret: process.env.CLOUDINARY_API_SECRET
-    })
-    try {
-        const uploadResult = await cloudinary.uploader.upload(filePath, {
-          resource_type: "auto",
-        });
-        fs.unlinkSync(filePath);
-        return uploadResult.secure_url;
-      } catch (error) {
-        fs.unlinkSync(filePath);
-        return null;
-      }
-};
+//     cloudinary.config({
+//         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//         api_key: process.env.CLOUDINARY_API_KEY,
+//         api_secret: process.env.CLOUDINARY_API_SECRET
+//     })
+//     try {
+//         const uploadResult = await cloudinary.uploader.upload(filePath, {
+//           resource_type: "auto",
+//         });
+//         fs.unlinkSync(filePath);
+//         return uploadResult.secure_url;
+//       } catch (error) {
+//         fs.unlinkSync(filePath);
+//         return null;
+//       }
+// };
 
 
 
@@ -47,13 +47,14 @@ const register = async(req,res)=>{
     const user = await FbUser.findOne({email: email})   
     if(user) return res.status(400).json({message : "Email already exists"})
 
-    const imageUrl = await uploadImgToCloudinary(req.file.path)
+    // const imageUrl = await uploadImgToCloudinary(req.file.path)
     const userCreate = await FbUser.create({
         name,
         email,
         password,
-        profileImage: imageUrl
+        // profileImage: imageUrl
     })
+
 
     res.status(200).json({
         message : "User created successfully",
@@ -74,21 +75,18 @@ const login = async (req,res)=>{
     const isPassword = await bcrypt.compare(password, user.password)
     if(!isPassword) return res.status(404).json({message : "password mismatch"})
 
-    const access = generateAccessToken(user)
-    const refresh = generateRefreshToken(user)
-
-    res.cookie('refresh', refresh, {
-        httpOnly: true,
-        secure: false,  
-        sameSite: "strict", 
-    })
-
-    res.status(200).json({
-        message : "User logged in successfully",
-        access,
-        refresh,
-        data : user
-    })
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+        res.cookie("refreshToken", refreshToken, {
+          http: true,
+          secure: false,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        res.status(200).json({
+          message: "User logged in successfully",
+          data: user,
+          ACCESS_TOKEN: accessToken,
+        });
 }
 
 
