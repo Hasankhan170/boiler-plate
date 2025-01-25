@@ -64,30 +64,78 @@ const register = async(req,res)=>{
 
 
 
-const login = async (req,res)=>{
-    const {email,password} = req.body;
-    if(!email) return res.status(404).json({message : "Please enter a email"})        
-    if(!password) return res.status(404).json({message : "Please enter a password"})
+// const login = async (req,res)=>{
+//     const {email,password} = req.body;
+//     if(!email) return res.status(404).json({message : "Please enter a email"})        
+//     if(!password) return res.status(404).json({message : "Please enter a password"})
 
-    const user = await FbUser.findOne ({email:email})
-    if(!user) return res.status(404).json({message : "User not found"})
+//     const user = await FbUser.findOne ({email:email})
+//     if(!user) return res.status(404).json({message : "User not found"})
     
-    const isPassword = await bcrypt.compare(password, user.password)
-    if(!isPassword) return res.status(404).json({message : "password mismatch"})
+//     const isPassword = await bcrypt.compare(password, user.password)
+//     if(!isPassword) return res.status(404).json({message : "password mismatch"})
 
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-        res.cookie("refreshToken", refreshToken, {
-          http: true,
-          secure: false,
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-        res.status(200).json({
-          message: "User logged in successfully",
-          data: user,
-          ACCESS_TOKEN: accessToken,
-        });
-}
+//         const accessToken = generateAccessToken(user);
+//         const refreshToken = generateRefreshToken(user);
+//         res.cookie("refreshToken", refreshToken, {
+//           http: true,
+//           secure: false,
+//           maxAge: 7 * 24 * 60 * 60 * 1000,
+//         });
+//         res.status(200).json({
+//           message: "User logged in successfully",
+//           data: user,
+//           ACCESS_TOKEN: accessToken,
+//         });
+// }
+
+
+const login = async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      // Input validation
+      if (!email)
+        return res.status(400).json({ message: "Please enter an email" });
+      if (!password)
+        return res.status(400).json({ message: "Please enter a password" });
+  
+      // Find user
+      const user = await FbUser.findOne({ email });
+      if (!user) return res.status(404).json({ message: "User not found" });
+  
+      // Check password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid)
+        return res.status(401).json({ message: "Invalid password" });
+  
+      // Generate tokens
+      const accessToken = generateAccessToken(user); // Short-lived token
+      const refreshToken = generateRefreshToken(user); // Long-lived token
+  
+      // Set refresh token cookie with appropriate settings
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Secure in production
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+  
+      // Send response
+      res.status(200).json({
+        message: "User logged in successfully",
+        accessToken,
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+        },
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
 
 
 const logout = async (req,res)=>{
