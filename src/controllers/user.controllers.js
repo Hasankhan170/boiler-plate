@@ -135,13 +135,14 @@ const login = async (req, res) => {
         return res.status(401).json({ message: "Invalid password" });
   
       // Generate tokens
-      const accessToken = generateAccessToken(user); // Short-lived token
-      const refreshToken = generateRefreshToken(user); // Long-lived token
+      const accessToken = generateAccessToken(user); 
+      const refreshToken = generateRefreshToken(user); 
   
       // Set refresh token cookie with appropriate settings
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // Secure in production
+        http: true,
+        secure: false,
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
