@@ -23,11 +23,11 @@ const loanSchema = new mongoose.Schema(
     },
     amount: { type: Number, required: true },
     duration: { type: Number, required: true },
-    status: { 
-      type: String, 
-      enum: ["pending", "approved", "rejected"], 
-      default: "pending" 
-    }
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending", 
+    },
   },
   { timestamps: true }
 );
