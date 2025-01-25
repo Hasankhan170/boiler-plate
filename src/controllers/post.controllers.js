@@ -66,17 +66,51 @@ const singleUserPost = async (req,res)=>{
 }
 
 // get all user post
-const getAllUserPost = async (req, res) => {
-    const page = parseInt(req.query.page) || 1; 
-    const limit = parseInt(req.query.limit) || 3; 
+// const getAllUserPost = async (req, res) => {
+//     const page = parseInt(req.query.page) || 1; 
+//     const limit = parseInt(req.query.limit) || 3; 
 
+//     const skip = (page - 1) * limit;
+
+//     try {
+//         const posts = await FbPost.find({}).skip(skip).limit(limit);
+
+//         if (!posts || posts.length === 0) {
+//             return res.status(404).json({ message: "No posts found" });
+//         }
+
+//         res.status(200).json({
+//             message: "All posts found",
+//             posts,
+//             length: posts.length,
+//             page,
+//             limit,
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: "Server error" });
+//     }
+// }
+
+const getAllUserPost = async (req, res) => {
+    // Parse pagination parameters with defaults
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.max(1, parseInt(req.query.limit) || 3);
     const skip = (page - 1) * limit;
 
     try {
+        // Fetch posts with pagination
         const posts = await FbPost.find({}).skip(skip).limit(limit);
 
+        // Check if posts are empty
         if (!posts || posts.length === 0) {
-            return res.status(404).json({ message: "No posts found" });
+            return res.status(200).json({ 
+                message: "No posts found", 
+                posts: [], 
+                length: 0, 
+                page, 
+                limit 
+            });
         }
 
         res.status(200).json({
@@ -87,10 +121,11 @@ const getAllUserPost = async (req, res) => {
             limit,
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching posts:", error.message);
         res.status(500).json({ message: "Server error" });
     }
-}
+};
+
 
 
 const deletePost = async (req, res) => {
