@@ -2,31 +2,32 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
-    name : {
-        type : String,
-        required : true,   
+    name: {
+        type: String,
+        required: true
     },
-    email : {
-        type : String,
-        required : true,
-        unique : true,
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
-    password : {
-        type : String,
-        required : true,
+    password: { 
+        type: String,
+        default: null 
     },
-    // profileImage : {
-    //     type : String,
-    //     required : true,
-    // },
-    posts :[{
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'FbPost'
-    }]},
-    {
-        timestamps : true,
-    }
-)
+    cnic : {
+        type : Number,
+        required : true
+    },
+    role: { 
+        type: String,
+        enum : ['user','admin'],
+        default : "user",
+        required : true
+
+    }},{
+        timestamps: true
+    })
 
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")) return next();

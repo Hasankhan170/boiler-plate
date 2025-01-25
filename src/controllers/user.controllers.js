@@ -39,10 +39,12 @@ const generateRefreshToken = (user)=>{
 
 
 const register = async(req,res)=>{
-    const {name,email,password} = req.body;
+    const {name,email,password,cnic} = req.body;
     if(!name) return res.status(404).json({message : "Please enter a name"})       
     if(!email) return res.status(404).json({message : "Please enter a email"})        
     if(!password) return res.status(404).json({message : "Please enter a password"})
+    if(!cnic) return res.status(404).json({message : "Please enter a cnic"})
+
 
     const user = await FbUser.findOne({email: email})   
     if(user) return res.status(400).json({message : "Email already exists"})
@@ -51,7 +53,8 @@ const register = async(req,res)=>{
     const userCreate = await FbUser.create({
         name,
         email,
-        password,
+        password: password || null,
+        cnic
         // profileImage: imageUrl
     })
 
@@ -92,13 +95,13 @@ const register = async(req,res)=>{
 
 const login = async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { email, password  } = req.body;
   
       // Input validation
       if (!email)
         return res.status(400).json({ message: "Please enter an email" });
       if (!password)
-        return res.status(400).json({ message: "Please enter a password" });
+        return res.status(400).json({ message: "Please enter a password " });
   
       // Find user
       const user = await FbUser.findOne({ email });
