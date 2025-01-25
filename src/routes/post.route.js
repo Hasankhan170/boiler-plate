@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.post("/post", upload.single("image"),authenticateUser,postCreate)
 router.get("/post/:id", authenticateUser,singleUserPost)
-router.get("/post",authenticateUser,getAllUserPost)
+router.get("/post",getAllUserPost)
 router.delete("/post/:id",authenticateUser,deletePost)
 router.put("/post/:id",authenticateUser,editPost)
 
