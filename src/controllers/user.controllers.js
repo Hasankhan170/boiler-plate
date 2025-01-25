@@ -140,11 +140,9 @@ const login = async (req, res) => {
   
       // Set refresh token cookie with appropriate settings
       res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
         http: true,
         secure: false,
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
   
       // Send response
